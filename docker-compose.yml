@@ -1,7 +1,6 @@
-version: '3.3'
 services:
   snake:
-    image: 'amrit96/snake'
+    image: 'iamandicip/snake'
     environment:
       - "PORT:3000"
     ports:
