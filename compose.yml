@@ -1,0 +1,9 @@
+services:
+  snake:
+    image: snake:test
+    environment:
+      - "PORT:3000"
+    ports:
+      - "80:3000"
+    volumes:
+      - ./:/app
