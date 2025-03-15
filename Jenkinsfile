@@ -1,53 +1,26 @@
-pipeline {
-agent any 
-
-   stages {
-
+node ('Ubuntu-app-agent'){  
+    def app
+   
     stage('Cloning Git') {
-
-      steps
-        {
-        /* Let's make sure we have the repository cloned to our workspace */
-       checkout scm
-        }  
-    }
-    stage('SAST'){
-      steps{
-        sh 'echo SAST stage'
-       }
-    }
-
+      /* Let's make sure we have the repository cloned to our workspace */
+      checkout scm
+    }  
     
     stage('Build-and-Tag') {
-    /* This builds the actual image; synonymous to
-         * docker build on the command line */
-      steps{    
-        sh 'echo Build and Tag'
-          }
+      /* This builds the actual image; synonymous to
+       * docker build on the command line */
+      app = docker.build("iamandicip/snake")
     }
 
     stage('Post-to-dockerhub') {
-     steps {
-        sh 'echo post to dockerhub repo'
-     }
-    }
-
-    stage('SECURITY-IMAGE-SCANNER'){
-      steps {
-        sh 'echo scan image for security'
-     }
-    }
-
-    stage('Pull-image-server') {
-      steps {
-         sh 'echo pulling image ...'
-       }
+      docker.withRegistry('https://registry.hub.docker.com', 'training-creds') {
+        app.push("latest")
       }
-    
-    stage('DAST') {
-      steps  {
-         sh 'echo dast scan for security'
-        }
     }
- }
+  
+    
+    stage('Pull-image-server') {
+      sh "docker-compose down"
+      sh "docker-compose up -d"	
+    }
 }
